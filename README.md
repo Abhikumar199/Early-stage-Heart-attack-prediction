@@ -1,139 +1,156 @@
-#  Predicting the Silent Threat: Early-Stage Heart Attack Prediction using Machine Learning
+# Early-Stage Heart Disease Risk Prediction
 
-**Author:** Abhishek Kumar  
-**Date:** November 2025  
-**Dataset:** CDC Heart Disease Dataset  
-**GitHub Repo:** [Early-stage-Heart-attack-prediction](https://github.com/Abhikumar199/Early-stage-Heart-attack-prediction)
+A machine-learning project exploring heart-disease classification with the CDC Behavioral Risk Factor Surveillance System (BRFSS) dataset. The focus is on building and comparing models on a large, real-world public-health survey dataset, with particular attention to class imbalance, recall, and the trade-off between detecting positive cases and generating false alarms.
 
----
+This is a research and learning project, not a clinically validated diagnostic tool. The target used in the project is the dataset's `HeartDisease` label; this should not be interpreted as predicting an imminent heart attack.
 
-##  Project Overview
+## Why this project is useful
 
-This project focuses on developing a **machine learning-based predictive model** for **early detection of heart attack and cardiovascular disease risk** using the **CDC Heart Disease Dataset**.  
+Unlike a small, clean demonstration dataset, BRFSS is a large observational survey built from self-reported health and lifestyle information. Modeling this type of data raises practical issues that matter in real-world machine learning:
 
-Heart diseases are among the leading causes of death globally, and early prediction can play a crucial role in preventive healthcare. The goal of this project is to build and compare multiple ML models capable of predicting potential heart attack risks based on health, behavioral, and lifestyle features.
+- Imbalanced labels, where overall accuracy can hide poor detection of positive cases.
+- Mixed demographic, behavioral, and health-related variables.
+- Careful encoding, preprocessing, and train/test separation.
+- Comparing model performance using recall, precision, F1-score, ROC-AUC, and accuracy rather than accuracy alone.
+- The need to interpret model output cautiously and avoid treating predictive association as causation.
 
----
+The project explores these issues through exploratory analysis, feature engineering, baseline classifiers, boosting models, and neural-network experiments.
 
-## Objectives
+## Dataset
 
-- Predict early-stage heart disease risk using real-world health data  
-- Compare multiple ML algorithms for optimal accuracy, recall, and precision  
-- Handle **imbalanced classes** effectively using resampling methods  
-- Optimize for **recall**, prioritizing detection of positive (high-risk) cases  
-- Provide explainable insights for medical interpretability  
+**Source:** [CDC Behavioral Risk Factor Surveillance System (BRFSS), 2024 annual data](https://www.cdc.gov/brfss/annual_data/annual_2024.html)
 
----
+The project README and report describe the source dataset as containing **300,000+ records** and health-related survey features. The raw full-size dataset is not present in the current repository tree, so users should obtain it from the official source and follow the source's documentation and terms.
 
-##  Dataset Description
+The target column used in the project is `HeartDisease`:
 
-**Source:** [CDC Behavioral Risk Factor Surveillance System (BRFSS) 2024](https://www.cdc.gov/brfss/annual_data/annual_2024.html)
+- `1`: heart disease reported
+- `0`: no heart disease reported
 
-**Size:** ~300,000+ records  
-**Features:** 18 health-related attributes  
-**Target:** `HeartDisease` (1 = Heart Disease, 0 = No Heart Disease)
+Features used or considered in the project include age category, BMI, smoking, alcohol drinking, physical and mental health, diabetes, sleep time, physical activity, and sex. The precise set of columns depends on the processed dataset used in each notebook.
 
-**Key Features:**
-- AgeCategory  
-- BMI  
-- Smoking  
-- AlcoholDrinking  
-- PhysicalHealth  
-- MentalHealth  
-- Diabetic  
-- SleepTime  
-- PhysicalActivity  
-- Sex  
+**Important distinction:** BRFSS is an observational survey. This project models a reported heart-disease outcome from survey variables. It does not establish a clinical diagnosis, infer causality, or directly forecast an acute heart attack.
 
----
+## Workflow
 
-## 🧩 Workflow
+### 1. Data preprocessing
 
-### 1️ Data Preprocessing
-- Cleaned and standardized dataset (removed missing values, duplicates)
-- Label encoded categorical variables (`Yes/No` → `1/0`, `Male/Female` → `1/0`)
-- Handled **class imbalance** using **SMOTE (Synthetic Minority Oversampling Technique)**
-- Split data into 80% train and 20% test sets
+The notebooks explore cleaning, duplicate and missing-value handling, categorical encoding, feature preparation, and train/test splitting. SMOTE is used in experiments to address class imbalance. Resampling should be applied to training data only, after the split, to prevent leakage into evaluation data.
 
-### 2️ Exploratory Data Analysis (EDA)
-- Generated correlation heatmaps and feature distributions  
-- Performed **PCA (Principal Component Analysis)** for visualization  
-- Observed overlapping clusters, confirming the **non-linear separability** of classes
+### 2. Exploratory analysis and feature engineering
 
-### 3️ Model Building
-Implemented and tuned multiple models:
-| Algorithm | Library | Highlights |
-|------------|----------|------------|
-| Logistic Regression | Scikit-learn | Baseline model for comparison |
-| Random Forest | Scikit-learn | Ensemble-based feature selection |
-| Support Vector Machine (SVM) | Scikit-learn | High recall and robustness |
-| XGBoost | xgboost | Excellent performance on tabular data |
-| LightGBM | lightgbm | Fast, memory-efficient |
-| CatBoost | catboost | Handles categorical data efficiently |
-| Multilayer Perceptron (MLP) | TensorFlow / PyTorch | Captures complex feature relations |
+The project examines feature distributions and relationships, uses correlation plots and PCA for exploratory visualization, and investigates whether health and lifestyle variables help distinguish the target classes. PCA plots are exploratory; overlap in a projection is not, by itself, proof that a class boundary is nonlinear.
 
-A **Recall-Optimized Ensemble Model (XGBoost + LightGBM + CatBoost)** was created for final evaluation.
+### 3. Models compared
 
-### 4️ Model Evaluation
-Evaluated using:
-- **Accuracy**
-- **Precision**
-- **Recall**
-- **F1-Score**
-- **ROC–AUC Curve**
+The repository contains experiments involving:
 
----
+- Logistic Regression
+- Random Forest
+- Support Vector Machine (SVM)
+- XGBoost
+- LightGBM
+- CatBoost
+- Multilayer Perceptron (MLP)
+- A boosting ensemble combining XGBoost, LightGBM, and CatBoost
 
-##  Results Summary
+The goal is to compare models and operating trade-offs, especially positive-class recall. Higher recall can reduce missed positive cases, but it may also lead to more false positives.
+
+### 4. Evaluation
+
+Reported evaluation metrics include accuracy, precision, recall, F1-score, ROC-AUC, confusion matrices, ROC curves, and precision–recall curves. For imbalanced health labels, review precision and the confusion matrix alongside recall; high accuracy alone is not enough.
+
+## Reported results
+
+The current project README contains the following historical experiment results. These values are reproduced from that README and have not been independently rerun as part of this documentation update.
 
 | Model | Recall | Accuracy | Precision |
-|--------|--------|-----------|------------|
-| SVM | **66.08%** | **88.16%** | 20% |
-| Ensemble (XGB + LGBM + CatBoost) | **64.3%** | **89%** | 21.4% |
-| MLP (Neural Network) | **72.29%** | **74.89%** | 12.69% |
-| Logistic Regression | **71.19%** | **84.45%** | 16.68% |
-| XGBoost | **61.79%** | **85.33%** | 16% |
-| Random Forest | **60%** | **86.19%** | 17% |
+| --- | ---: | ---: | ---: |
+| SVM | 66.08% | 88.16% | 20.00% |
+| XGBoost + LightGBM + CatBoost ensemble | 64.30% | 89.00% | 21.40% |
+| MLP | 72.29% | 74.89% | 12.69% |
+| Logistic Regression | 71.19% | 84.45% | 16.68% |
+| XGBoost | 61.79% | 85.33% | 16.00% |
+| Random Forest | 60.00% | 86.19% | 17.00% |
 
- **Final Ensemble Model Performance:**
-- **Accuracy:** ~89%  
-- **Recall:** ~72%  
-- **ROC–AUC:** ≈ 0.90  
-- **Precision:** ~21%  
+The previous README also reported an ROC-AUC of approximately 0.90 for the final ensemble, but it did not identify the exact model/run and evaluation setup for that figure. Confirm the metric against saved evaluation outputs before comparing it with the table.
 
----
+The results show an important real-world trade-off: the model with the highest accuracy is not necessarily the one with the highest recall. Precision values are low in these reported experiments, meaning a substantial fraction of positive predictions may be false positives. These outcomes require more validation before practical use.
 
-## 🧠 Key Insights
+## Repository structure
 
-- **Top Predictors:** Age Category, Physical Health, Diabetic,has asthma
-- Lifestyle and behavioral features significantly influence prediction outcomes  
-- Balancing recall is critical — reducing false negatives can save lives  
-- PCA showed partial overlap between classes, confirming the need for non-linear models  
+```text
+Early-stage-Heart-attack-prediction/
+├── Analysis/
+│   ├── Data_Preprocessing.ipynb
+│   ├── EDA.ipynb
+│   ├── Feature_Eng.ipynb
+│   ├── Model_Combined.ipynb
+│   ├── Model_V1.ipynb
+│   └── Model_XGB.ipynb
+├── Raw_data_preprocessing/
+│   └── datap.ipynb
+├── catboost_info/
+└── README.md
+```
 
----
+The repository includes preprocessing, exploratory analysis, feature engineering, and modeling notebooks. The full raw BRFSS dataset is not currently listed in the repository tree. Some small CSV files in the repository may be placeholders or generated artifacts; check their contents before treating them as complete datasets.
 
-## 🧰 Tech Stack
+## Getting started
 
-| Category | Tools |
-|-----------|--------|
-| **Languages** | Python |
-| **Libraries** | NumPy, Pandas, Scikit-learn, XGBoost, LightGBM, CatBoost, TensorFlow, Matplotlib, Seaborn |
-| **Preprocessing** | Imbalanced-learn (SMOTE), Scikit-metrics,pytorch,cuda |
-| **Development** | Jupyter Notebook, VS Code |
-| **Version Control** | Git & GitHub |
+Clone the repository:
 
----
+```bash
+git clone https://github.com/Abhikumar199/Early-stage-Heart-attack-prediction.git
+cd Early-stage-Heart-attack-prediction
+```
 
-## 📉 Visualizations
+Create and activate a Python environment, then install the libraries required by the notebooks. The repository does not currently provide a verified root-level `requirements.txt`, so check notebook imports and your local environment before choosing package versions.
 
-| Plot | Description |
-|------|--------------|
-| **Correlation Heatmap** | Shows relationships between features |
-| **PCA Plot** | Highlights data distribution and separability |
-| **ROC Curve** | Evaluates classifier’s performance |
-| **Confusion Matrix** | Displays true vs. predicted classes |
-| **Precision–Recall Curve** | Measures trade-off between recall and precision |
-| **Error Plot** | Highlights false positives and negatives |
-  
+Common libraries used in the project include:
 
-`
+- Python, NumPy, and Pandas
+- Matplotlib and Seaborn
+- Scikit-learn
+- imbalanced-learn
+- XGBoost, LightGBM, and CatBoost
+- PyTorch and/or TensorFlow for neural-network experiments
+
+Download the relevant BRFSS data from the official CDC source, prepare the files as expected by the preprocessing notebook, and run the notebooks in sequence. Exact paths and commands depend on the local data layout.
+
+## Methodological notes
+
+For a trustworthy evaluation on imbalanced survey data:
+
+1. Separate training and test data before fitting preprocessing steps or applying SMOTE.
+2. Fit encoders, scalers, feature-selection steps, and resampling only on the training fold.
+3. Use a stratified split or cross-validation where appropriate, and report how the split was constructed.
+4. Select classification thresholds on validation data rather than the test set.
+5. Report confusion matrices, precision, recall, F1, ROC-AUC, and precision–recall performance, with class prevalence and the threshold stated.
+6. Check for duplicates or closely related records crossing train/test boundaries.
+7. Evaluate calibration and stability across splits before making claims about deployment.
+8. Document the exact dataset version, feature list, random seed, software versions, and preprocessing choices.
+
+These are recommended reproducibility checks; the existing notebooks should be inspected to confirm which checks are already implemented.
+
+## Limitations
+
+- The current results are historical notebook outputs and require independent reruns for confirmation.
+- The full raw dataset is not included in the current repository tree.
+- Low reported precision indicates a false-positive burden that needs careful evaluation.
+- A random split may not fully represent performance under changes in population or survey collection.
+- Self-reported survey variables can contain measurement error and may not represent clinical measurements.
+- Feature importance and predictive association do not establish causation.
+- No external validation, prospective clinical validation, or real-world deployment assessment is documented here.
+
+## Visualizations
+
+The notebooks are intended to generate exploratory feature plots, a correlation heatmap, PCA visualizations, ROC curves, confusion matrices, and precision–recall curves. Refer to the corresponding notebook outputs for the current figures.
+
+## Intended use
+
+This repository is intended for educational and research use in tabular machine learning, imbalanced classification, and analysis of public-health survey data. It must not be used to diagnose heart disease, predict an imminent heart attack, or guide medical decisions.
+
+## Citation and data terms
+
+Credit the CDC BRFSS dataset and follow the official data documentation and usage terms. If using this project in research or coursework, cite this repository and clearly describe the data version, preprocessing, evaluation method, and model configuration used.
